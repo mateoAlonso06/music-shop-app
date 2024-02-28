@@ -15,12 +15,13 @@ namespace disqueriaBussines
 			AccesoDatos consultar = new AccesoDatos();	
 			try
 			{
-				consultar.SetQuery("SELECT D.Titulo, D.FechaLanzamiento, D.CantidadCanciones, D.UrlImagenTapa, E.Descripcion AS Genero, T.Descripcion AS Edicion FROM DISCOS D, ESTILOS E, TIPOSEDICION T WHERE D.IdEstilo = E.Id AND D.IdTipoEdicion = T.Id;");
+				consultar.SetQuery("SELECT D.Id, D.Titulo, D.FechaLanzamiento, D.CantidadCanciones, D.UrlImagenTapa, E.Descripcion AS Genero, T.Descripcion AS Edicion, E.Id AS Ies, T.Id AS Itipo FROM DISCOS D, ESTILOS E, TIPOSEDICION T WHERE D.IdEstilo = E.Id AND D.IdTipoEdicion = T.Id;");
 				consultar.LaunchReader();
 
 				while (consultar.Lector.Read())
 				{
 					Disco aux = new Disco();
+					aux.Id = (int)consultar.Lector["Id"];
 					aux.Titulo = (string)consultar.Lector["Titulo"];
 					aux.FechaLanzamiento = (DateTime)consultar.Lector["FechaLanzamiento"];
 					aux.CantidadCanciones = (int)consultar.Lector["CantidadCanciones"];
@@ -30,8 +31,10 @@ namespace disqueriaBussines
 					}
 					aux.Genero = new Estilo();
 					aux.Genero.Descripcion = (string)consultar.Lector["Genero"];
+					aux.Genero.Id = (int)consultar.Lector["Ies"];
 					aux.Edicion = new TipoEdicion();
 					aux.Edicion.Descripcion = (string)consultar.Lector["Edicion"];
+					aux.Edicion.Id = (int)consultar.Lector["Itipo"];
 
 					lista.Add(aux);
 				}
@@ -67,5 +70,68 @@ namespace disqueriaBussines
 				throw exc;
 			}
 		}
+
+        public void updateQuery(Disco nuevo)
+        {
+			AccesoDatos consultar = new AccesoDatos();	
+			try
+			{
+				consultar.SetQuery("UPDATE DISCOS SET Titulo = @titulo, FechaLanzamiento = @fecha, CantidadCanciones = @cantidad, UrlImagenTapa = @tapa, IdEstilo = @idEstilo, IdTipoEdicion = @idTipo WHERE Id = @id;");
+				consultar.setParameters("@titulo", nuevo.Titulo);
+				consultar.setParameters("@fecha", nuevo.FechaLanzamiento);
+				consultar.setParameters("@cantidad", nuevo.CantidadCanciones);
+				consultar.setParameters("@tapa", nuevo.UrlTapa);
+				consultar.setParameters("@idEstilo", nuevo.Genero.Id);
+				consultar.setParameters("@idTipo", nuevo.Edicion.Id);
+				consultar.setParameters("id", nuevo.Id);
+				consultar.ejecutarAccion();
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+			finally
+			{
+				consultar.CerrarConexion();
+			}
+        }
+
+        public void EliminarLogico(int id)
+        {
+			AccesoDatos datos = new AccesoDatos();
+			try
+			{
+				datos.SetQuery("UPDATE POKEMONS SET Activo = 0 WHERE ID = @Id;");
+				datos.setParameters("@Id", id);
+				datos.ejecutarAccion();
+			}
+			catch (Exception exc)
+			{
+				throw exc;
+			}
+			finally
+			{
+				datos.CerrarConexion();
+			}
+        }
+
+		public void Eliminar(int id)
+		{
+            AccesoDatos consulta = new AccesoDatos();
+            try
+            {
+                consulta.SetQuery("DELETE FROM POKEMONS WHERE Id = @Id");
+				consulta.setParameters("@Id", id);
+				consulta.ejecutarAccion();
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+            finally
+            {
+                consulta.CerrarConexion();
+            }
+        }
     }
 }

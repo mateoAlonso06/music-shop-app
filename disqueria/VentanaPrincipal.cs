@@ -16,6 +16,7 @@ namespace disqueria
     public partial class FrmMain : Form
     {
         private List<Disco> listaDiscos;
+        private int opcionDelete;
         public FrmMain()
         {
             InitializeComponent();
@@ -23,19 +24,7 @@ namespace disqueria
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-            DisqueriaBussines negocio = new DisqueriaBussines();
-            try
-            {
-                listaDiscos = negocio.Listar();
-                dgvDiscos.DataSource = listaDiscos;
-                dgvDiscos.Columns["UrlTapa"].Visible = false;
-                dgvDiscos.Columns["FechaLanzamiento"].DefaultCellStyle.Format = "dd/MM/yyyy";
-                CargarImagen(listaDiscos[0].UrlTapa);
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.ToString());
-            }
+            cargar();
         }
 
         public void CargarImagen(string urlImagen)
@@ -62,6 +51,15 @@ namespace disqueria
             form2.ShowDialog();
             cargar();
         }
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            Disco actual;
+            actual = (Disco)dgvDiscos.CurrentRow.DataBoundItem;
+
+            AgregarDisco form2 = new AgregarDisco(actual);
+            form2.ShowDialog();
+            cargar();
+        }
 
         private void cargar()
         {
@@ -70,9 +68,64 @@ namespace disqueria
             {
                 listaDiscos = negocio.Listar();
                 dgvDiscos.DataSource = listaDiscos;
-                dgvDiscos.Columns["UrlTapa"].Visible = false;
-                dgvDiscos.Columns["FechaLanzamiento"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                ocultarColumnas();
                 CargarImagen(listaDiscos[0].UrlTapa);
+
+                foreach (DataGridViewColumn column in dgvDiscos.Columns)
+                {
+                    column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.ToString());
+            }
+        }
+        private void ocultarColumnas()
+        {
+            dgvDiscos.Columns["UrlTapa"].Visible = false;
+            dgvDiscos.Columns["FechaLanzamiento"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            dgvDiscos.Columns["Id"].Visible = false;
+        }
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnRefrescar_Click(object sender, EventArgs e)
+        {
+            cargar();
+            MessageBox.Show("Se han actualizado los registros");
+        }
+
+        private void eliminar(int n, bool logico = false)
+        {
+            DisqueriaBussines negocio = new DisqueriaBussines();
+            Disco seleccionado;
+            string textoAlerta;
+            try
+            {
+                if (n == 1)
+                    textoAlerta = "¿Desea eliminar el disco del registro?";
+                else
+                    textoAlerta = "¿Desea dar de baja el disco del registro?";
+
+                DialogResult alerta = MessageBox.Show(textoAlerta, "Eliminando...", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if(alerta == DialogResult.Yes)
+                {
+                    seleccionado = (Disco)dgvDiscos.CurrentRow.DataBoundItem;
+                    if(logico)
+                    {
+                        negocio.EliminarLogico(seleccionado.Id);
+                        MessageBox.Show("Eliminado. Permancera en la base de datos");
+                    }
+                    else
+                    {
+                        negocio.Eliminar(seleccionado.Id);
+                        MessageBox.Show("Eliminado correctamente");
+                    }
+                    cargar();
+                }
             }
             catch (Exception exc)
             {
@@ -80,9 +133,16 @@ namespace disqueria
             }
         }
 
-        private void btnExit_Click(object sender, EventArgs e)
+        private void btnEliminarLogico_Click(object sender, EventArgs e)
         {
-            this.Close();
+            opcionDelete = 2;
+            eliminar(2, true);
+        }
+
+        private void btnEliminarFisico_Click(object sender, EventArgs e)
+        {
+            opcionDelete = 1;
+            eliminar(1);
         }
     }
 }

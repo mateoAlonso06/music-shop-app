@@ -15,9 +15,16 @@ namespace disqueria
 {
     public partial class AgregarDisco : Form
     {
+        private Disco disco = null;
         public AgregarDisco()
         {
             InitializeComponent();
+        }
+        public AgregarDisco(Disco disco)
+        {
+            InitializeComponent();
+            this.disco = disco;
+            Text = "Modificar disco";
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)
@@ -27,10 +34,14 @@ namespace disqueria
 
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            Disco disco = new Disco();
             DisqueriaBussines negocio1 = new DisqueriaBussines();
             try
-            {
+            {   
+                if(disco == null)
+                {
+                    disco = new Disco();
+                }
+
                 disco.Titulo = addTitulo.Text;
                 disco.FechaLanzamiento = addFecha.Value;
                 disco.CantidadCanciones = int.Parse(addCantidad.Text);
@@ -38,8 +49,16 @@ namespace disqueria
                 disco.Genero = (Estilo)addGenero.SelectedItem;
                 disco.Edicion = (TipoEdicion)addTipo.SelectedItem;
 
-                negocio1.InsertQuery(disco);
-                MessageBox.Show("Agregado exitosamente");
+                if(disco.Id != 0)
+                {
+                    negocio1.updateQuery(disco);
+                    MessageBox.Show("Disco modificado exitosamente");
+                }
+                else
+                {
+                    negocio1.InsertQuery(disco);
+                    MessageBox.Show("Agregado exitosamente");
+                }
                 Close();
             }
             catch (Exception ex)
@@ -55,7 +74,22 @@ namespace disqueria
             try
             {
                 addGenero.DataSource = negGenero.Listar();
+                addGenero.ValueMember = "Id";
+                addGenero.DisplayMember = "Descripcion";
                 addTipo.DataSource = negEdicion.Listar();
+                addTipo.ValueMember = "Id";
+                addTipo.DisplayMember = "Descripcion";
+
+                if(disco != null)
+                {
+                    addTitulo.Text = disco.Titulo;
+                    addFecha.Value = disco.FechaLanzamiento;
+                    addCantidad.Text = disco.CantidadCanciones.ToString();
+                    addUrl.Text = disco.UrlTapa;
+                    CargarImagen(disco.UrlTapa);
+                    addTipo.SelectedValue = disco.Edicion.Id;
+                    addGenero.SelectedValue = disco.Genero.Id;
+                }
             }
             catch (Exception exc)
             {
