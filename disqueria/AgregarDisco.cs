@@ -110,7 +110,7 @@ namespace disqueria
             }
             catch (Exception)
             {
-                loadPortada.Load("https://www.google.com/url?sa=i&url=https%3A%2F%2Feditorial.unc.edu.ar%2Fplaceholder-png%2F&psig=AOvVaw2ifd52O5oO5F_4keDSw8se&ust=1709125663981000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCNCt17LLy4QDFQAAAAAdAAAAABAE");
+                loadPortada.Load("https://editorial.unc.edu.ar/wp-content/uploads/sites/33/2022/09/placeholder.png");
             }
         }
     }

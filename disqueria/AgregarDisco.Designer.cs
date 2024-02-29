@@ -125,6 +125,8 @@
             // 
             // addTitulo
             // 
+            this.addTitulo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.addTitulo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.addTitulo.Location = new System.Drawing.Point(18, 32);
             this.addTitulo.Name = "addTitulo";
             this.addTitulo.Size = new System.Drawing.Size(196, 20);
@@ -132,6 +134,8 @@
             // 
             // addUrl
             // 
+            this.addUrl.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.addUrl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.addUrl.Location = new System.Drawing.Point(235, 80);
             this.addUrl.Name = "addUrl";
             this.addUrl.Size = new System.Drawing.Size(196, 20);
@@ -140,6 +144,8 @@
             // 
             // addCantidad
             // 
+            this.addCantidad.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.addCantidad.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.addCantidad.Location = new System.Drawing.Point(235, 32);
             this.addCantidad.Name = "addCantidad";
             this.addCantidad.Size = new System.Drawing.Size(196, 20);
@@ -147,6 +153,7 @@
             // 
             // addGenero
             // 
+            this.addGenero.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.addGenero.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.addGenero.FormattingEnabled = true;
             this.addGenero.Location = new System.Drawing.Point(18, 129);
@@ -156,6 +163,7 @@
             // 
             // addTipo
             // 
+            this.addTipo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.addTipo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.addTipo.FormattingEnabled = true;
             this.addTipo.Location = new System.Drawing.Point(235, 129);
@@ -185,6 +193,7 @@
             // 
             // addFecha
             // 
+            this.addFecha.CalendarMonthBackground = System.Drawing.Color.WhiteSmoke;
             this.addFecha.Location = new System.Drawing.Point(18, 80);
             this.addFecha.Name = "addFecha";
             this.addFecha.Size = new System.Drawing.Size(196, 20);
@@ -192,7 +201,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.LightGray;
+            this.groupBox1.BackColor = System.Drawing.Color.White;
             this.groupBox1.Controls.Add(this.addFecha);
             this.groupBox1.Controls.Add(this.leyenda);
             this.groupBox1.Controls.Add(this.loadPortada);
@@ -217,7 +226,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Gray;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.ClientSize = new System.Drawing.Size(683, 253);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnCancelar);

@@ -15,7 +15,7 @@ namespace disqueriaBussines
 			AccesoDatos consultar = new AccesoDatos();	
 			try
 			{
-				consultar.SetQuery("SELECT D.Id, D.Titulo, D.FechaLanzamiento, D.CantidadCanciones, D.UrlImagenTapa, E.Descripcion AS Genero, T.Descripcion AS Edicion, E.Id AS Ies, T.Id AS Itipo FROM DISCOS D, ESTILOS E, TIPOSEDICION T WHERE D.IdEstilo = E.Id AND D.IdTipoEdicion = T.Id;");
+				consultar.SetQuery("SELECT D.Id, D.ALTA, D.Titulo, D.FechaLanzamiento, D.CantidadCanciones, D.UrlImagenTapa, E.Descripcion AS Genero, T.Descripcion AS Edicion, E.Id AS Ies, T.Id AS Itipo FROM DISCOS D, ESTILOS E, TIPOSEDICION T WHERE D.IdEstilo = E.Id AND D.IdTipoEdicion = T.Id AND ALTA = 1;");
 				consultar.LaunchReader();
 
 				while (consultar.Lector.Read())
@@ -32,6 +32,7 @@ namespace disqueriaBussines
 					aux.Genero = new Estilo();
 					aux.Genero.Descripcion = (string)consultar.Lector["Genero"];
 					aux.Genero.Id = (int)consultar.Lector["Ies"];
+					aux.Alta = (bool)consultar.Lector["ALTA"];
 					aux.Edicion = new TipoEdicion();
 					aux.Edicion.Descripcion = (string)consultar.Lector["Edicion"];
 					aux.Edicion.Id = (int)consultar.Lector["Itipo"];
@@ -101,7 +102,7 @@ namespace disqueriaBussines
 			AccesoDatos datos = new AccesoDatos();
 			try
 			{
-				datos.SetQuery("UPDATE POKEMONS SET Activo = 0 WHERE ID = @Id;");
+				datos.SetQuery("UPDATE DISCOS SET ALTA = 0 WHERE ID = @Id;");
 				datos.setParameters("@Id", id);
 				datos.ejecutarAccion();
 			}
@@ -120,7 +121,7 @@ namespace disqueriaBussines
             AccesoDatos consulta = new AccesoDatos();
             try
             {
-                consulta.SetQuery("DELETE FROM POKEMONS WHERE Id = @Id");
+                consulta.SetQuery("DELETE FROM DISCOS WHERE Id = @Id");
 				consulta.setParameters("@Id", id);
 				consulta.ejecutarAccion();
             }
@@ -131,6 +132,153 @@ namespace disqueriaBussines
             finally
             {
                 consulta.CerrarConexion();
+            }
+        }
+
+		public List<Disco> Filtrar(string campo, string criterio, string clave)
+		{
+			AccesoDatos consultar = new AccesoDatos();
+			List<Disco> lista = new List<Disco>();
+			try
+			{
+				string enviarConsulta = "SELECT D.Id, D.Titulo, D.FechaLanzamiento, D.CantidadCanciones, D.UrlImagenTapa, E.Descripcion AS Genero, T.Descripcion AS Edicion, E.Id AS Ies, T.Id AS Itipo FROM DISCOS D, ESTILOS E, TIPOSEDICION T WHERE D.IdEstilo = E.Id AND D.IdTipoEdicion = T.Id AND ";
+				if(campo == "Titulo")
+				{
+					switch(criterio)
+					{
+						case "Empieza con":
+							enviarConsulta += "D.Titulo LIKE '" + clave + "%'";
+							break;
+						case "Termina con":
+							enviarConsulta += "D.Titulo LIKE '%" + clave + "'";
+							break;
+						default:
+							enviarConsulta += "D.Titulo LIKE '%" + clave + "%'";
+							break;
+					}
+				}
+				else if(campo == "Genero")
+				{
+                    switch (criterio)
+                    {
+                        case "Empieza con":
+                            enviarConsulta += "E.Descripcion LIKE '" + clave + "%'";
+                            break;
+                        case "Termina con":
+                            enviarConsulta += "E.Descripcion LIKE '%" + clave + "'";
+                            break;
+                        default:
+                            enviarConsulta += "E.Descripcion LIKE '%" + clave + "%'";
+                            break;
+                    }
+                }
+				else
+				{
+                    switch (criterio)
+                    {
+                        case "Empieza con":
+                            enviarConsulta += "T.Descripcion LIKE '" + clave + "%'";
+                            break;
+                        case "Termina con":
+                            enviarConsulta += "T.Descripcion LIKE '%" + clave + "'";
+                            break;
+                        default:
+                            enviarConsulta += "T.Descripcion '%" + clave + "%'";
+                            break;
+                    }
+                }
+
+				consultar.SetQuery(enviarConsulta);
+				consultar.LaunchReader();
+				while(consultar.Lector.Read())
+				{
+                    Disco aux = new Disco();
+                    aux.Id = (int)consultar.Lector["Id"];
+                    aux.Titulo = (string)consultar.Lector["Titulo"];
+                    aux.FechaLanzamiento = (DateTime)consultar.Lector["FechaLanzamiento"];
+                    aux.CantidadCanciones = (int)consultar.Lector["CantidadCanciones"];
+                    if (!(consultar.Lector["UrlImagenTapa"] is DBNull))
+                    {
+                        aux.UrlTapa = (string)consultar.Lector["UrlImagenTapa"];
+                    }
+                    aux.Genero = new Estilo();
+                    aux.Genero.Descripcion = (string)consultar.Lector["Genero"];
+                    aux.Genero.Id = (int)consultar.Lector["Ies"];
+                    aux.Edicion = new TipoEdicion();
+                    aux.Edicion.Descripcion = (string)consultar.Lector["Edicion"];
+                    aux.Edicion.Id = (int)consultar.Lector["Itipo"];
+
+                    lista.Add(aux);
+                }
+				return lista;
+			}
+			catch (Exception exc)
+			{
+				throw exc;
+			}
+			finally
+			{
+				consultar.CerrarConexion();
+			}
+		}
+
+        public List<Disco> TraerBajas()
+        {
+
+            List<Disco> lista = new List<Disco>();
+            AccesoDatos consultar = new AccesoDatos();
+            try
+            {
+                consultar.SetQuery("SELECT D.Id, D.Titulo, D.FechaLanzamiento, D.CantidadCanciones, D.UrlImagenTapa, E.Descripcion AS Genero, T.Descripcion AS Edicion, E.Id AS Ies, T.Id AS Itipo FROM DISCOS D, ESTILOS E, TIPOSEDICION T WHERE D.IdEstilo = E.Id AND D.IdTipoEdicion = T.Id AND ALTA = 0;");
+                consultar.LaunchReader();
+
+                while (consultar.Lector.Read())
+                {
+                    Disco aux = new Disco();
+                    aux.Id = (int)consultar.Lector["Id"];
+                    aux.Titulo = (string)consultar.Lector["Titulo"];
+                    aux.FechaLanzamiento = (DateTime)consultar.Lector["FechaLanzamiento"];
+                    aux.CantidadCanciones = (int)consultar.Lector["CantidadCanciones"];
+                    if (!(consultar.Lector["UrlImagenTapa"] is DBNull))
+                    {
+                        aux.UrlTapa = (string)consultar.Lector["UrlImagenTapa"];
+                    }
+                    aux.Genero = new Estilo();
+                    aux.Genero.Descripcion = (string)consultar.Lector["Genero"];
+                    aux.Genero.Id = (int)consultar.Lector["Ies"];
+                    aux.Edicion = new TipoEdicion();
+                    aux.Edicion.Descripcion = (string)consultar.Lector["Edicion"];
+                    aux.Edicion.Id = (int)consultar.Lector["Itipo"];
+
+                    lista.Add(aux);
+                }
+                return lista;
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+            finally
+            {
+                consultar.CerrarConexion();
+            }
+        }
+        public void Alta(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetQuery("UPDATE DISCOS SET ALTA = 1 WHERE ID = @Id;");
+                datos.setParameters("@Id", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+            finally
+            {
+                datos.CerrarConexion();
             }
         }
     }

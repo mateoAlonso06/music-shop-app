@@ -12,6 +12,7 @@ namespace dominio
     {
         public int Id { get; set; } 
         [DisplayName("Título")]
+        public bool Alta {  get; set; }
         public string Titulo { get; set; }
         [DisplayName("Fecha de lanzamiento")]
         public DateTime FechaLanzamiento { get; set; }
